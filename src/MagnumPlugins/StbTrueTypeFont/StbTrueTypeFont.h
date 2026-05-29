@@ -139,6 +139,15 @@ The @ref fillGlyphCache() function expects a @ref PixelFormat::R8Unorm glyph
 cache. If the format doesn't match or the glyphs can't fit, it prints a message
 to @relativeref{Magnum,Error} and returns @cpp false @ce.
 
+For TrueType Collection (`*.ttc`) fonts, the `fontIndex` plugin configuration
+option selects which font from the collection is opened. The default is `0`.
+Set it before calling @ref openFile() or @ref openData():
+
+@code{.cpp}
+font->configuration().setValue("fontIndex", 1);
+font->openFile("collection.ttc", 16.0f);
+@endcode
+
 The stb_truetype library doesn't provide any advanced shaping capabilities,
 thus @ref AbstractShaper::setScript(),
 @relativeref{AbstractShaper,setLanguage()} and

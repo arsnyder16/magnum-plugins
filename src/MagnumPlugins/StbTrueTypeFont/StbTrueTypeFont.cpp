@@ -31,6 +31,7 @@
 #include <Corrade/Containers/StringView.h>
 #include <Corrade/PluginManager/AbstractManager.h>
 #include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Unicode.h>
 #include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
@@ -100,10 +101,10 @@ auto StbTrueTypeFont::doOpenData(const Containers::ArrayView<const char> data, c
        the whole plugin lifetime */
     font->data = Containers::Array<unsigned char>(InPlaceInit, Containers::arrayCast<const unsigned char>(data));
 
-    /** @todo ability to specify different font index in TTC collection */
-    const int offset = stbtt_GetFontOffsetForIndex(font->data, 0);
+    const int fontIndex = configuration().value<int>("fontIndex");
+    const int offset = stbtt_GetFontOffsetForIndex(font->data, fontIndex);
     if(offset < 0) {
-        Error{} << "Text::StbTrueTypeFont::openData(): can't get offset of the first font";
+        Error{} << "Text::StbTrueTypeFont::openData(): can't get offset of font" << fontIndex;
         return {};
     }
 

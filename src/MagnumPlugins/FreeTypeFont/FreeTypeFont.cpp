@@ -33,6 +33,7 @@
 #include <Corrade/Containers/String.h>
 #include <Corrade/PluginManager/AbstractManager.h>
 #include <Corrade/Utility/Algorithms.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Unicode.h>
 #include <Magnum/Image.h>
 #include <Magnum/ImageView.h>
@@ -106,8 +107,8 @@ auto FreeTypeFont::doOpenData(const Containers::ArrayView<const char> data, cons
     _data = Containers::Array<unsigned char>{InPlaceInit, Containers::arrayCast<const unsigned char>(data)};
 
     CORRADE_ASSERT(freeType.library, "Text::FreeTypeFont::openSingleData(): initialize() was not called", {});
-    /** @todo ability to specify different font in TTC collection */
-    if(FT_Error error = FT_New_Memory_Face(freeType.library, _data.begin(), _data.size(), 0, &_ftFont)) {
+    const FT_Long fontIndex = configuration().value<FT_Long>("fontIndex");
+    if(FT_Error error = FT_New_Memory_Face(freeType.library, _data.begin(), _data.size(), fontIndex, &_ftFont)) {
         Error e;
         e << "Text::FreeTypeFont::openData(): failed to open the font:";
         if(const char* string =

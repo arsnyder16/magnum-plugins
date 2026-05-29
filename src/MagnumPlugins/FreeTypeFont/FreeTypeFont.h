@@ -142,6 +142,15 @@ to @relativeref{Magnum,Error} and returns @cpp false @ce.
 For font formats that support it, @ref glyphName() and @ref glyphForName()
 provides mapping between glyph IDs and names.
 
+For TrueType Collection (`*.ttc`) fonts, the `fontIndex` plugin configuration
+option selects which font from the collection is opened. The default is `0`.
+Set it before calling @ref openFile() or @ref openData():
+
+@code{.cpp}
+font->configuration().setValue("fontIndex", 1);
+font->openFile("collection.ttc", 16.0f);
+@endcode
+
 The FreeType library alone doesn't provide any advanced shaping capabilities,
 thus @ref AbstractShaper::setScript(),
 @relativeref{AbstractShaper,setLanguage()} and

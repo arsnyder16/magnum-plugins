@@ -30,6 +30,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Utility/Path.h>
 #include <Magnum/Math/Vector2.h>
@@ -48,6 +49,8 @@ struct HarfBuzzFontTest: TestSuite::Tester {
     explicit HarfBuzzFontTest();
 
     void scriptMapping();
+
+    void fontIndex();
 
     void shape();
     void shapeDifferentScriptLanguageDirection();
@@ -228,7 +231,8 @@ const struct {
 };
 
 HarfBuzzFontTest::HarfBuzzFontTest() {
-    addTests({&HarfBuzzFontTest::scriptMapping});
+    addTests({&HarfBuzzFontTest::scriptMapping,
+              &HarfBuzzFontTest::fontIndex});
 
     addInstancedTests({&HarfBuzzFontTest::shape},
         Containers::arraySize(ShapeData));
@@ -258,6 +262,17 @@ HarfBuzzFontTest::HarfBuzzFontTest() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(FREETYPEFONT_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     CORRADE_INTERNAL_ASSERT_OUTPUT(_manager.load(HARFBUZZFONT_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
+}
+
+void HarfBuzzFontTest::fontIndex() {
+    Containers::Pointer<AbstractFont> first = _manager.instantiate("HarfBuzzFont");
+    CORRADE_VERIFY(first->openFile(Utility::Path::join(FREETYPEFONT_TEST_DIR, "Oxygen.collection.ttc"), 16.0f));
+    CORRADE_COMPARE(first->glyphId(U'W'), 58);
+
+    Containers::Pointer<AbstractFont> second = _manager.instantiate("HarfBuzzFont");
+    second->configuration().setValue("fontIndex", 1);
+    CORRADE_VERIFY(second->openFile(Utility::Path::join(FREETYPEFONT_TEST_DIR, "Oxygen.collection.ttc"), 16.0f));
+    CORRADE_COMPARE(second->glyphId(U'W'), 72);
 }
 
 void HarfBuzzFontTest::scriptMapping() {
